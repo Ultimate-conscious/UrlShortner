@@ -11,6 +11,8 @@ https://babeljs.io/blog/2020/10/15/7.12.0#class-static-blocks-
 
 ## 
 
+Here you can find the valid input format to all the backend routes (postman collction)
+https://www.postman.com/pr-lanjewar/workspace/urlshortner-api/collection/31696948-722bf1db-7e73-449c-9db4-480c35bd3946?action=share&creator=31696948
 
 ## Requirements
 

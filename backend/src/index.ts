@@ -7,6 +7,7 @@ import { dbConnect } from "./utils/dbConnect";
 import nodemailer from "nodemailer";
 import { config } from 'dotenv';
 import shortid from "shortid"
+import { resetPasswordMail } from "./utils/mailHandler";
 
 config()
 
@@ -115,22 +116,8 @@ app.post("/api/forgetPassword",async (req,res)=>{
         await user.save();
 
         //refactor mailing in utils
-        const transporter = nodemailer.createTransport({
-            service: "Gmail",
-            auth: {
-                user:process.env.HANDLER_MAIL, pass: process.env.HANDLER_PASS
-            }
-        })
-        const mailOptions = {
-            to: email,
-            from: process.env.HANDLER_MAIL,
-            subject: 'Password Reset',
-            text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-            Please click on the following link, or paste this into your browser to complete the process:\n\n
-            http://localhost:3000/api/reset-password/${OTP}\n\n
-            If you did not request this, please ignore this email and your password will remain unchanged.\n`
-        };
-        await transporter.sendMail(mailOptions);
+        
+        await resetPasswordMail(OTP,email);
 
         res.status(200).json({
             status: true,

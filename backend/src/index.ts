@@ -8,6 +8,7 @@ import nodemailer from "nodemailer";
 import { config } from 'dotenv';
 import shortid from "shortid"
 import { resetPasswordMail } from "./utils/mailHandler";
+import { getFromCache, putUrlInCache } from "./utils/cacheHandler";
 
 config()
 
@@ -190,6 +191,8 @@ app.post("/url/shorten",authMiddleware,async (req,res)=>{
     
         await newUrl.save();
 
+        await putUrlInCache(urlcode,longUrl);
+
         res.json({
             status: true,
             data:{
@@ -211,6 +214,13 @@ app.post("/url/shorten",authMiddleware,async (req,res)=>{
 
 app.get("/:urlcode",async(req,res)=>{
     const {urlcode} = req.params;
+
+    const {success,longUrl} = await getFromCache(urlcode);
+
+    if(success){
+        res.redirect(longUrl);
+        return;
+    }
     
     const url = await UrlModel.findOne({
         urlcode
@@ -222,6 +232,8 @@ app.get("/:urlcode",async(req,res)=>{
         })
         return;
     }
+
+    await putUrlInCache(urlcode,url.longUrl);
 
     res.redirect(url.longUrl);
 })
